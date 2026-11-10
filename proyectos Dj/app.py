@@ -4,7 +4,7 @@ import streamlit as str
 str.set_page_config(page_title="Mi Página Web", layout="wide")
 
 # 2. Leer el archivo HTML existente
-with open("index.html", "r", encoding="utf-8") as f:
+with open("proyectos Dj/index.html", "r", encoding="utf-8") as f:
     html_content = f.read()
 
 # 3. Renderizar el HTML en Streamlit (permitiendo scripts y estilos CSS internos)
