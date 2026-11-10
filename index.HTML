@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Torneo de Sumo - Fundación Grupo EPM</title>
+    <style>
+      :root {
+        --verde: #00843d;
+        --verde-oscuro: #005a2b;
+        --verde-claro: #e8f5ee;
+        --gris: #5b6570;
+        --gris-claro: #f3f5f6;
+        --gris-borde: #d9dee2;
+        --blanco: #ffffff;
+        --texto: #263238;
+        --rojo: #c62828;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--gris-claro);
+        color: var(--texto);
+      }
+
+      header {
+        background: var(--blanco);
+        border-bottom: 4px solid var(--verde);
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .brand img {
+        max-height: 48px;
+        max-width: 190px;
+        object-fit: contain;
+      }
+      .logo-placeholder {
+        width: 150px;
+        height: 45px;
+        border: 2px dashed var(--verde);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--verde);
+        font-size: 11px;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 6px;
+      }
+      .brand h1 {
+        font-size: 20px;
+        margin: 0;
+        color: var(--verde-oscuro);
+      }
+
+      nav button,
+      .btn {
+        border: 0;
+        border-radius: 7px;
+        padding: 10px 15px;
+        background: var(--verde);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      nav button.secondary,
+      .btn.secondary {
+        background: var(--gris);
+      }
+      button:hover {
+        filter: brightness(0.9);
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: auto;
+        padding: 24px;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+
+      .hero {
+        background: linear-gradient(120deg, var(--verde-oscuro), var(--verde));
+        color: #fff;
+        border-radius: 14px;
+        padding: 28px;
+        margin-bottom: 22px;
+      }
+      .hero h2 {
+        margin: 0 0 8px;
+        font-size: 30px;
+      }
+      .hero p {
+        margin: 0;
+        opacity: 0.9;
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid var(--gris-borde);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+      .card h3 {
+        margin-top: 0;
+        color: var(--verde-oscuro);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      label {
+        display: block;
+        font-weight: 700;
+        margin: 10px 0 5px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #cbd2d7;
+        border-radius: 7px;
+        font-size: 15px;
+      }
+      textarea {
+        min-height: 100px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: var(--verde-claro);
+        color: var(--verde-oscuro);
+        font-weight: 700;
+        font-size: 12px;
+        margin-right: 4px;
+      }
+
+      .match-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+      }
+      .match {
+        border: 2px solid var(--gris-borde);
+        border-radius: 12px;
+        padding: 16px;
+        background: #fff;
+      }
+      .match.live {
+        border-color: var(--verde);
+      }
+
+      .team {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 7px;
+        background: var(--gris-claro);
+        margin: 6px 0;
+      }
+      .team.winner {
+        background: var(--verde-claro);
+        border-left: 5px solid var(--verde);
+        font-weight: 700;
+      }
+
+      .bracket {
+        display: flex;
+        gap: 24px;
+        overflow-x: auto;
+        padding-bottom: 12px;
+      }
+      .round {
+        min-width: 260px;
+      }
+      .round h3 {
+        text-align: center;
+        color: var(--verde-oscuro);
+        border-bottom: 2px solid var(--verde);
+        padding-bottom: 8px;
+      }
+
+      .bracket-match {
+        background: #fff;
+        border: 1px solid var(--gris-borde);
+        border-radius: 8px;
+        margin: 18px 0;
+        padding: 8px;
+      }
+      .bracket-team {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        border-bottom: 1px solid var(--gris-borde);
+      }
+      .bracket-team:last-child {
+        border: 0;
+      }
+      .bracket-team.winner {
+        background: var(--verde-claro);
+        font-weight: bold;
+        border-radius: 4px;
+      }
+
+      .notice {
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--verde-claro);
+        border-left: 4px solid var(--verde);
+        margin: 10px 0;
+      }
+      .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .small {
+        font-size: 12px;
+        color: var(--gris);
+      }
+
+      @media (max-width: 700px) {
+        header {
+          padding: 12px;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .container {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo-placeholder">LOGO FUNDACIÓN EPM</div>
+        <div>
+          <h1 id="eventTitle">Torneo de Sumo</h1>
+          <div class="small">Resultados en tiempo real</div>
+        </div>
+      </div>
+      <nav>
+        <button onclick="showView('public')">Resultados Publicos</button>
+        <button onclick="showView('admin')" class="secondary">
+          Administrador
+        </button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <!-- VISTA PÚBLICA -->
+      <section id="public" class="view active">
+        <div class="hero">
+          <h2 id="publicTitle">Torneo de Sumo</h2>
+          <p id="publicSubtitle">
+            Consulta los encuentros, grupos y fase final.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Encuentros en curso y recientes</h3>
+          <div id="liveMatches" class="match-grid"></div>
+        </div>
+
+        <div class="card">
+          <h3>Fase de Grupos</h3>
+          <div id="groupsPublic" class="grid"></div>
+        </div>
+
+        <div class="card">
+          <h3>Llave Final (Eliminatoria)</h3>
+          <div id="bracketPublic" class="bracket"></div>
+        </div>
+      </section>
+
+      <!-- VISTA ADMINISTRADOR -->
+      <section id="admin" class="view">
+        <div class="hero">
+          <h2>Panel de Administración</h2>
+          <p>Configura equipos, resultados y llaves eliminatorias.</p>
+        </div>
+
+        <!-- 1. Configuración -->
+        <div class="card">
+          <h3>1. Configuración General</h3>
+          <div class="grid">
+            <div><label>Nombre del Torneo</label><input id="cfgTitle" /></div>
+            <div><label>Subtítulo</label><input id="cfgSubtitle" /></div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="saveConfig()">Guardar Nombre</button>
+          </div>
+        </div>
+
+        <!-- 2. Equipos -->
+        <div class="card">
+          <h3>2. Cargar Equipos</h3>
+          <p class="small">Escribe un nombre por línea:</p>
+          <textarea
+            id="teamsInput"
+            placeholder="Robot A&#10;Robot B&#10;Robot C&#10;Robot D"
+          ></textarea>
+          <div class="actions">
+            <button class="btn" onclick="loadTeams()">Cargar Equipos</button>
+            <button class="btn secondary" onclick="clearTournament()">
+              Reiniciar Todo
+            </button>
+          </div>
+          <div id="teamsAdmin"></div>
+        </div>
+
+        <!-- 3. Grupos -->
+        <div class="card">
+          <h3>3. Generar Grupos y Encuentros</h3>
+          <div class="grid">
+            <div>
+              <label>Tamaño de grupo (N° Equipos)</label>
+              <input id="groupSize" type="number" min="2" value="4" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" onclick="createGroups()">
+              Generar Grupos Aleatorios
+            </button>
+          </div>
+          <div id="groupsAdmin" style="margin-top: 15px"></div>
+        </div>
+
+        <!-- 4. Gestión de Encuentros de Grupos -->
+        <div class="card">
+          <h3>4. Marcar Ganadores de Grupos</h3>
+          <div id="matchesAdmin" class="match-grid"></div>
+        </div>
+
+        <!-- 5. Llave Final -->
+        <div class="card">
+          <h3>5. Fase Final (Bracket)</h3>
+          <p class="small">
+            Una vez concluyan los partidos por grupos, o cuando existan
+            ganadores seleccionados, genera la llave final.
+          </p>
+          <div class="actions">
+            <button class="btn" onclick="buildBracket()">
+              Generar / Actualizar Llave Final
+            </button>
+          </div>
+          <div id="bracketAdmin" class="bracket" style="margin-top: 15px"></div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const KEY = "torneo_sumo_epm_v2";
+
+      let state = JSON.parse(localStorage.getItem(KEY)) || {
+        config: {
+          title: "Torneo de Sumo Fundación EPM",
+          subtitle: "Resultados en tiempo real",
+        },
+        teams: [],
+        groups: [],
+        matches: [],
+        bracket: [],
+      };
+
+      function save() {
+        localStorage.setItem(KEY, JSON.stringify(state));
+        render();
+      }
+
+      function esc(s) {
+        return String(s ?? "").replace(
+          /[&<>"']/g,
+          (m) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[m],
+        );
+      }
+
+      function showView(id) {
+        document
+          .querySelectorAll(".view")
+          .forEach((x) => x.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        render();
+      }
+
+      function saveConfig() {
+        state.config.title =
+          document.getElementById("cfgTitle").value || "Torneo de Sumo";
+        state.config.subtitle =
+          document.getElementById("cfgSubtitle").value ||
+          "Resultados en tiempo real";
+        save();
+      }
+
+      function loadTeams() {
+        const list = document
+          .getElementById("teamsInput")
+          .value.split(/\n/)
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (!list.length) {
+          alert("Agrega al menos un equipo.");
+          return;
+        }
+        state.teams = [...new Set(list)];
+        state.groups = [];
+        state.matches = [];
+        state.bracket = [];
+        save();
+      }
+
+      function createGroups() {
+        const size = Math.max(
+          2,
+          parseInt(document.getElementById("groupSize").value) || 4,
+        );
+        if (!state.teams.length) {
+          alert("Primero carga los equipos.");
+          return;
+        }
+
+        const shuffled = [...state.teams].sort(() => Math.random() - 0.5);
+        state.groups = [];
+        state.matches = [];
+        state.bracket = [];
+
+        let groupIdx = 0;
+        for (let i = 0; i < shuffled.length; i += size) {
+          const gName = "Grupo " + String.fromCharCode(65 + groupIdx);
+          const gTeams = shuffled.slice(i, i + size);
+          state.groups.push({ name: gName, teams: gTeams, winner: null });
+
+          // Generar enfrentamientos Todos contra Todos dentro del grupo
+          for (let x = 0; x < gTeams.length; x++) {
+            for (let y = x + 1; y < gTeams.length; y++) {
+              state.matches.push({
+                id: "m_" + Date.now() + "_" + Math.floor(Math.random() * 10000),
+                groupIndex: groupIdx,
+                team1: gTeams[x],
+                team2: gTeams[y],
+                winner: null,
+                status: "programado",
+              });
+            }
+          }
+          groupIdx++;
+        }
+        save();
+      }
+
+      function setMatchWinner(matchId, winnerTeam) {
+        const m = state.matches.find((x) => x.id === matchId);
+        if (!m) return;
+
+        m.winner = winnerTeam;
+        m.status = "finalizado";
+
+        // Verificar si el grupo correspondiente ya finalizó todos los encuentros
+        const gMatches = state.matches.filter(
+          (x) => x.groupIndex === m.groupIndex,
+        );
+        const allDone = gMatches.every((x) => x.winner !== null);
+
+        if (allDone) {
+          // Calcular automáticamente el ganador por más victorias
+          const scores = {};
+          gMatches.forEach((x) => {
+            scores[x.winner] = (scores[x.winner] || 0) + 1;
+          });
+          let bestTeam = null;
+          let maxWins = -1;
+          Object.keys(scores).forEach((t) => {
+            if (scores[t] > maxWins) {
+              maxWins = scores[t];
+              bestTeam = t;
+            }
+          });
+          state.groups[m.groupIndex].winner = bestTeam;
+        }
+
+        save();
+      }
+
+      function buildBracket() {
+        // Obtener los ganadores de grupo
+        const groupWinners = state.groups.map((g) => g.winner).filter(Boolean);
+
+        if (groupWinners.length < 2) {
+          alert(
+            "Necesitas al menos 2 ganadores de grupo para crear la llave final. Finaliza los partidos pendientes.",
+          );
+          return;
+        }
+
+        state.bracket = [];
+        let currentTeams = [...groupWinners];
+        let roundNum = 1;
+
+        while (currentTeams.length > 1) {
+          const roundMatches = [];
+          for (let i = 0; i < currentTeams.length; i += 2) {
+            const t1 = currentTeams[i];
+            const t2 = currentTeams[i + 1] || "BYE";
+            roundMatches.push({
+              id: "b_" + roundNum + "_" + i / 2,
+              team1: t1,
+              team2: t2,
+              winner: t2 === "BYE" ? t1 : null,
+            });
+          }
+
+          state.bracket.push({
+            name: getRoundName(currentTeams.length),
+            matches: roundMatches,
+          });
+
+          // Preparar participantes de la siguiente ronda
+          currentTeams = roundMatches.map((m) => m.winner || "POR DEFINIR");
+          roundNum++;
+        }
+
+        save();
+      }
+
+      function getRoundName(count) {
+        if (count <= 2) return "Final";
+        if (count <= 4) return "Semifinal";
+        if (count <= 8) return "Cuartos de Final";
+        return "Ronda Eliminatoria";
+      }
+
+      function setBracketWinner(roundIdx, matchIdx, winnerTeam) {
+        if (winnerTeam === "POR DEFINIR" || winnerTeam === "BYE") return;
+
+        const currentRound = state.bracket[roundIdx];
+        const match = currentRound.matches[matchIdx];
+        match.winner = winnerTeam;
+
+        // Propagar al siguiente partido de la siguiente ronda si existe
+        if (state.bracket[roundIdx + 1]) {
+          const nextMatchIdx = Math.floor(matchIdx / 2);
+          const nextMatch = state.bracket[roundIdx + 1].matches[nextMatchIdx];
+
+          if (matchIdx % 2 === 0) {
+            nextMatch.team1 = winnerTeam;
+          } else {
+            nextMatch.team2 = winnerTeam;
+          }
+        }
+
+        save();
+      }
+
+      function clearTournament() {
+        if (
+          confirm(
+            "¿Seguro que deseas reiniciar todo el torneo? Se borrarán los resultados.",
+          )
+        ) {
+          state = {
+            config: {
+              title: "Torneo de Sumo Fundación EPM",
+              subtitle: "Resultados en tiempo real",
+            },
+            teams: [],
+            groups: [],
+            matches: [],
+            bracket: [],
+          };
+          save();
+        }
+      }
+
+      // RENDERIZADO
+      function render() {
+        document.getElementById("eventTitle").textContent = state.config.title;
+        document.getElementById("publicTitle").textContent = state.config.title;
+        document.getElementById("publicSubtitle").textContent =
+          state.config.subtitle;
+
+        document.getElementById("cfgTitle").value = state.config.title;
+        document.getElementById("cfgSubtitle").value = state.config.subtitle;
+        document.getElementById("teamsInput").value = state.teams.join("\n");
+
+        renderTeamsAdmin();
+        renderGroupsAdmin();
+        renderMatchesAdmin();
+        renderBracket(true, "bracketAdmin");
+        renderPublic();
+      }
+
+      function renderTeamsAdmin() {
+        const box = document.getElementById("teamsAdmin");
+        box.innerHTML = state.teams.length
+          ? `<p class="small"><b>Equipos Registrados (${state.teams.length}):</b> ${state.teams.map(esc).join(" · ")}</p>`
+          : '<p class="small">No hay equipos cargados.</p>';
+      }
+
+      function renderGroupsAdmin() {
+        const box = document.getElementById("groupsAdmin");
+        box.innerHTML = state.groups.length
+          ? state.groups
+              .map(
+                (g) => `
+      <div class="card" style="margin-bottom:10px;">
+        <b>${esc(g.name)}</b> ${g.winner ? `<span class="badge">Ganador: ${esc(g.winner)}</span>` : ""}
+        <div style="margin-top:5px;">${g.teams.map((t) => `<span class="badge">${esc(t)}</span>`).join("")}</div>
+      </div>
+    `,
+              )
+              .join("")
+          : '<p class="small">Aún no se han configurado grupos.</p>';
+      }
+
+      function renderMatchesAdmin() {
+        const box = document.getElementById("matchesAdmin");
+        if (!state.matches.length) {
+          box.innerHTML = '<p class="small">No hay encuentros generados.</p>';
+          return;
+        }
+
+        box.innerHTML = state.matches
+          .map(
+            (m) => `
+    <div class="match ${m.winner ? "" : "live"}">
+      <span class="badge">${esc(state.groups[m.groupIndex]?.name)}</span>
+      <div class="team ${m.winner === m.team1 ? "winner" : ""}">
+        <span>${esc(m.team1)}</span>
+        <button class="btn" onclick="setMatchWinner('${m.id}', '${esc(m.team1)}')">Gana</button>
+      </div>
+      <div class="team ${m.winner === m.team2 ? "winner" : ""}">
+        <span>${esc(m.team2)}</span>
+        <button class="btn" onclick="setMatchWinner('${m.id}', '${esc(m.team2)}')">Gana</button>
+      </div>
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      function renderBracket(isAdmin, targetId) {
+        const box = document.getElementById(targetId);
+        if (!state.bracket.length) {
+          box.innerHTML =
+            '<p class="small">La llave eliminatoria aún no se ha generado.</p>';
+          return;
+        }
+
+        box.innerHTML = state.bracket
+          .map(
+            (r, rIdx) => `
+    <div class="round">
+      <h3>${esc(r.name)}</h3>
+      ${r.matches
+        .map(
+          (m, mIdx) => `
+        <div class="bracket-match">
+          <div class="bracket-team ${m.winner === m.team1 ? "winner" : ""}">
+            <span>${esc(m.team1)}</span>${isAdmin && m.team1 !== "POR DEFINIR" && m.team1 !== "BYE" ? `<button class="btn" onclick="setBracketWinner(${rIdx}, ${mIdx}, '${esc(m.team1)}')">✓</button>` : ""}
+          </div>
+          <div class="bracket-team ${m.winner === m.team2 ? "winner" : ""}">
+            <span>${esc(m.team2)}</span>${isAdmin && m.team2 !== "POR DEFINIR" && m.team2 !== "BYE" ? `<button class="btn" onclick="setBracketWinner(${rIdx}, ${mIdx}, '${esc(m.team2)}')">✓</button>` : ""}
+          </div>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      function renderPublic() {
+        // Encuentros en curso o completados recientemente
+        const liveBox = document.getElementById("liveMatches");
+        liveBox.innerHTML = state.matches.length
+          ? state.matches
+              .map(
+                (m) => `
+        <div class="match ${m.winner ? "" : "live"}">
+          <span class="badge">${esc(state.groups[m.groupIndex]?.name)}</span>
+          <div class="team ${m.winner === m.team1 ? "winner" : ""}">
+            <span>${esc(m.team1)}</span>
+            ${m.winner === m.team1 ? "<b>(Ganador)</b>" : ""}
+          </div>
+          <div class="team ${m.winner === m.team2 ? "winner" : ""}">
+            <span>${esc(m.team2)}</span>
+            ${m.winner === m.team2 ? "<b>(Ganador)</b>" : ""}
+          </div>
+        </div>
+      `,
+              )
+              .join("")
+          : '<p class="small">Sin enfrentamientos.</p>';
+
+        // Grupos Públicos
+        document.getElementById("groupsPublic").innerHTML = state.groups
+          .map(
+            (g) => `
+    <div class="card">
+      <h3>${esc(g.name)}</h3>
+      ${g.winner ? `<p class="notice">Clasificado: <b>${esc(g.winner)}</b></p>` : ""}
+      <p>${g.teams.map((t) => `<span class="badge">${esc(t)}</span>`).join("")}</p>
+    </div>
+  `,
+          )
+          .join("");
+
+        // Bracket Público
+        renderBracket(false, "bracketPublic");
+      }
+
+      // Inicialización
+      render();
+    </script>
+  </body>
+</html>
